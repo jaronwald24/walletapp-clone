@@ -1,53 +1,69 @@
-import { Text, View, Image, useWindowDimensions } from 'react-native';
+import React from 'react';
+import { View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { cancelAnimation, useSharedValue, withDecay, clamp, withClamp } from 'react-native-reanimated';
+import Animated, {
+  cancelAnimation,
+  clamp,
+  SharedValue,
+  useSharedValue,
+  withClamp,
+  withDecay,
+} from 'react-native-reanimated';
 import Card from './Card';
-import { useState } from 'react';
 
-const cards = [
-    require('../../assets/cards/Card 1.png'),
-    require('../../assets/cards/Card 2.png'),
-    require('../../assets/cards/Card 3.png'),
-    require('../../assets/cards/Card 4.png'),
-    require('../../assets/cards/Card 5.png'),
-    require('../../assets/cards/Card 6.png'),
-    require('../../assets/cards/Card 7.png'),
-    require('../../assets/cards/Card 8.png'),
-    require('../../assets/cards/Card 9.png'),
-]
+export type WalletItem = {
+  id: string;
+  kind: 'card' | 'pass';
+  source: any;
+  height: number;
+};
 
-const CardsList = () => {
-    const [listHeight, setListHeight] = useState(0);
-    const { height: screenHeight } = useWindowDimensions();
+const CARD_PEEK = 58;
 
-    const activeCardIndex = useSharedValue(null);
+type Props = {
+  items: WalletItem[];
+  activeCardIndex: SharedValue<number | null>;
+  onActiveChange?: (nextIndex: number | null) => void;
+};
 
-    const scrollY = useSharedValue(0);
-    const maxScrollY = listHeight - screenHeight + 80;
+export default function CardsList({ items, activeCardIndex, onActiveChange }: Props) {
+  const { height: screenHeight } = useWindowDimensions();
 
-    const pan = Gesture.Pan()
-    .onBegin(() => {
-        cancelAnimation(scrollY);
-    })
-    .onStart(()=> {
-        console.log("panning started")
-    }).onChange((event) =>{
-        scrollY.value = clamp(scrollY.value - event.changeY, 0, maxScrollY);
+  // keep scroll stable even with mixed heights
+  const maxItemHeight = Math.max(...items.map((i) => i.height), 240);
+  const contentHeight = maxItemHeight + (items.length - 1) * CARD_PEEK;
+
+  const scrollY = useSharedValue(0);
+  const maxScrollY = Math.max(0, contentHeight - screenHeight + 140);
+
+  const pan = Gesture.Pan()
+    .onBegin(() => cancelAnimation(scrollY))
+    .onChange((event) => {
+      scrollY.value = clamp(scrollY.value - event.changeY, 0, maxScrollY);
     })
     .onEnd((event) => {
-        scrollY.value = withClamp({min: 0, max: maxScrollY} , 
-            withDecay({ velocity: -event.velocityY })) ;
+      scrollY.value = withClamp(
+        { min: 0, max: maxScrollY },
+        withDecay({ velocity: -event.velocityY })
+      );
     });
 
-    return (
-        <GestureDetector gesture={pan}>
-        <View style={{ padding: 10 }} onLayout={(event) => setListHeight(event.nativeEvent.layout.height)}>
-            {cards.map((card, index) => (
-                <Card key={index} card={card} index={index} scrollY={scrollY} activeCardIndex={activeCardIndex}/>
-            ))}
-        </View>
-        </GestureDetector>
-    )
+  return (
+    <GestureDetector gesture={pan}>
+      <View style={{ height: contentHeight, position: 'relative' }}>
+        {items.map((item, index) => (
+          <Card
+            key={item.id}
+            card={item.source}
+            index={index}
+            scrollY={scrollY}
+            activeCardIndex={activeCardIndex}
+            cardHeight={item.height}
+            cardPeek={CARD_PEEK}
+            onActiveChange={onActiveChange}
+          />
+        ))}
+      </View>
+    </GestureDetector>
+  );
 }
-
-export default CardsList;
