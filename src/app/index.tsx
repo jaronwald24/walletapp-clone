@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, SafeAreaView, View } from 'react-native';
 import CardsList from '../components/CardsList';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import React from 'react';
 
 
 export default function App() {
