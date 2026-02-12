@@ -2,15 +2,11 @@
   "expo": {
     "name": "WalletApp",
     "slug": "WalletApp",
-    "scheme": "MyWalletApp",
+    "scheme": "walletclone",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "statusBar": {
-      "backgroundColor": "#FFFFFF",
-      "style": "dark"
-    },
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",

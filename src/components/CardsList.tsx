@@ -1,4 +1,3 @@
-import React from 'react';
 import { View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -16,7 +15,8 @@ export type WalletItem = {
   kind: 'card' | 'pass';
   source: any;
   height: number;
-};
+  width?: number;
+}; 
 
 const CARD_PEEK = 58;
 
@@ -59,8 +59,10 @@ export default function CardsList({ items, activeCardIndex, onActiveChange }: Pr
             scrollY={scrollY}
             activeCardIndex={activeCardIndex}
             cardHeight={item.height}
+            cardWidth={item.width}
             cardPeek={CARD_PEEK}
             onActiveChange={onActiveChange}
+            isPass={item.kind === 'pass'}
           />
         ))}
       </View>

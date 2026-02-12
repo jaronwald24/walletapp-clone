@@ -17,10 +17,10 @@ type CardProps = {
   scrollY: SharedValue<number>;
   activeCardIndex: SharedValue<number | null>;
   cardHeight: number;
+  cardWidth?: number;
   cardPeek: number;
-
-  // NEW: lets the screen know what's active (to hide header / show gif)
   onActiveChange?: (nextIndex: number | null) => void;
+  isPass?: boolean;
 };
 
 const Card = ({
@@ -29,6 +29,7 @@ const Card = ({
   scrollY,
   activeCardIndex,
   cardHeight,
+  cardWidth,
   cardPeek,
   onActiveChange,
 }: CardProps) => {
@@ -66,13 +67,13 @@ const Card = ({
       }
 
       if (current === index) {
-        // Snap the active item so its TOP is at the TOP of the screen/container
-        translateY.value = withTiming(-80, {
+        translateY.value = withTiming(-20, {
           duration: 500,
           easing: Easing.out(Easing.quad),
         });
         return;
       }
+
       translateY.value = withTiming(screenHeight * 0.75 + index * 12, {
         duration: 500,
         easing: Easing.out(Easing.quad),
@@ -88,35 +89,43 @@ const Card = ({
   const tap = Gesture.Tap().onEnd(() => {
     const next = activeCardIndex.value == null ? index : null;
     activeCardIndex.value = next;
-
-    if (onActiveChange) {
-      runOnJS(onActiveChange)(next);
-    }
+    if (onActiveChange) runOnJS(onActiveChange)(next);
   });
+
+  const resolvedWidth = cardWidth ?? "100%";
 
   return (
     <GestureDetector gesture={tap}>
+      {/* Full-width absolute layer so centering is reliable */}
       <Animated.View
         style={{
           position: "absolute",
           left: 0,
           right: 0,
           top: 0,
+          height: cardHeight,
           transform: [{ translateY }],
+          alignItems: "center",
         }}
       >
-        <Animated.Image
-          source={card}
+        {/* Fixed-width centered frame */}
+        <Animated.View
           style={{
-            width: "100%",
+            width: resolvedWidth,
             height: cardHeight,
-            borderRadius: 22,
-            shadowOpacity: 0.25,
+            overflow: "hidden",
+            shadowColor: "#fff",
+            shadowOpacity: 0.15,
             shadowRadius: 18,
-            shadowOffset: { width: 0, height: 12 },
+            shadowOffset: { width: 0, height: 3 },
           }}
-          resizeMode="cover"
-        />
+        >
+          <Animated.Image
+            source={card}
+            style={{ width: "100%", height: "100%" }}
+            resizeMode="contain"
+          />
+        </Animated.View>
       </Animated.View>
     </GestureDetector>
   );
