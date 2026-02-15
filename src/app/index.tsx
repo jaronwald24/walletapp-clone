@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  SafeAreaView,
   StyleSheet,
   Text,
   View,
@@ -8,9 +7,44 @@ import {
   Image,
   useWindowDimensions,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 import CardsList, { WalletItem } from "../components/CardsList";
+
+type HeaderButtonVariant = "circle" | "pillIcon";
+
+type HeaderButtonProps = {
+  icon: "add" | "search" | "ellipsis-horizontal";
+  size: number;
+  onPress?: () => void;
+  variant?: HeaderButtonVariant;
+};
+
+function HeaderButton({ icon, size, onPress, variant = "circle" }: HeaderButtonProps) {
+  const isCircle = variant === "circle";
+
+  return (
+    <Pressable
+      onPress={onPress}
+      hitSlop={10}
+      style={({ pressed }) => [
+        isCircle ? styles.headerCircleBtn : styles.headerPillIconBtn,
+        pressed && { opacity: 0.7, transform: [{ scale: 0.98 }] },
+      ]}
+    >
+      <Ionicons name={icon} size={size} color="#fff" />
+    </Pressable>
+  );
+}
+
+type HeaderPillProps = {
+  children: React.ReactNode;
+};
+
+function HeaderPill({ children }: HeaderPillProps) {
+  return <View style={styles.headerPill}>{children}</View>;
+}
 
 const PASS_RATIO = 1.45;
 
@@ -78,15 +112,12 @@ export default function Index() {
           <Text style={styles.title}>Wallet</Text>
 
           <View style={styles.actions}>
-            <Pressable style={styles.circleBtn}>
-              <Ionicons name="add" size={22} color="#fff" />
-            </Pressable>
-            <Pressable style={styles.circleBtn}>
-              <Ionicons name="search" size={20} color="#fff" />
-            </Pressable>
-            <Pressable style={styles.circleBtn}>
-              <Ionicons name="ellipsis-horizontal" size={20} color="#fff" />
-            </Pressable>
+            <HeaderButton icon="add" size={30} />
+
+            <HeaderPill>
+              <HeaderButton icon="search" size={27} variant="pillIcon" />
+              <HeaderButton icon="ellipsis-horizontal" size={27} variant="pillIcon" />
+            </HeaderPill>
           </View>
         </View>
       )}
@@ -124,18 +155,15 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#fff",
-    fontSize: 44,
-    fontWeight: "800",
+    fontSize: 38,
+    fontWeight: "700",
     letterSpacing: -0.5,
   },
-  actions: { flexDirection: "row", gap: 12, paddingBottom: 6 },
-  circleBtn: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: "#2a2a2a",
+  actions: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    gap: 12,
+    paddingBottom: 6,
   },
 
   stackWrap: {
@@ -160,5 +188,53 @@ const styles = StyleSheet.create({
     color: "rgba(255,255,255,0.55)",
     fontSize: 28,
     fontWeight: "500",
+  },
+
+  // --- Wallet-style header controls (match iOS look) ---
+  headerCircleBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+
+    // iOS Wallet-like dark control
+    backgroundColor: "#1c1c1e",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.10)",
+
+    // subtle highlight ring
+    shadowOpacity: 0.35,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 8,
+  },
+
+  headerPill: {
+    height: 44,
+    borderRadius: 22,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+
+    backgroundColor: "#1c1c1e",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.10)",
+
+    minWidth: 110,
+
+    shadowOpacity: 0.35,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 8,
+  },
+
+  headerPillIconBtn: {
+    width: 52,
+    height: 44,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "transparent",
   },
 });
