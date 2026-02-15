@@ -23,11 +23,10 @@ const cardSources = [
   require("../../assets/cards/FreedomCard.png"),
   require("../../assets/cards/DebitCard.png"),
   require("../../assets/cards/UnitedCard.png"),
-  require("../../assets/cards/AAACard.png"),
 ];
 
 const passSources = [
-  require("../../assets/passes/ID4.png"),
+  require("../../assets/passes/ID5.png"),
 ];
 
 export default function Index() {

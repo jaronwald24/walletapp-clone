@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "WalletApp",
-    "slug": "WalletApp",
+    "name": "Wallet",
+    "slug": "Wallet",
     "scheme": "walletclone",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/Wallet3.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -13,13 +13,16 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "icon": "./assets/Wallet3.png",
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.WalletApp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.anonymous.WalletApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
